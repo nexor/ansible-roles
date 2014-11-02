@@ -1,0 +1,19 @@
+---
+# Install postgresql
+
+- name: Install psycopg2
+  action: apt pkg={{item}} state=latest
+  with_items:
+    - python-psycopg2
+
+- name: Install PostgreSQL
+  apt: name=postgresql-9.3 state=present
+  
+- name: Create Postgresql user
+  postgresql_user: name="{{ database_user }}" password="{{ database_password }}"
+                role_attr_flags=CREATEDB,LOGIN state=present
+  sudo_user: postgres
+
+- name: Create empty database
+  postgresql_db: name="{{ database_name }}" owner="{{ database_user }}" state=present
+  sudo_user: postgres
