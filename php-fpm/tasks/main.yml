@@ -1,0 +1,26 @@
+---
+# Install php5-fpm and composer
+
+- name: Install PHP5 and extensions
+  action: apt pkg={{item}} state=latest
+  with_items:
+    - curl
+    - php5-fpm
+    - php5-cli
+    - php5-pgsql
+    - php5-mcrypt
+    - php5-json
+    - php5-intl
+    - php5-curl
+    - php5-redis
+
+- name: Enabling PHP5 mcrypt extension
+  command: php5enmod mcrypt creates=/etc/php5/fpm/conf.d/20-mcrypt.ini
+
+- name: Setup php-fpm
+  template: src=conf.j2 dest=/etc/php5/fpm/pool.d/{{ php_pool_name }}.conf
+
+- name: Install composer
+  shell: curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
+  args:
+    creates: /usr/local/bin/composer

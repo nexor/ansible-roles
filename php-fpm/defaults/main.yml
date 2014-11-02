@@ -1,0 +1,4 @@
+---
+
+fpm_listen: 127.0.0.1:8080
+php_pool_name: www
