@@ -1,0 +1,10 @@
+alias s="git status"
+alias d="git diff ."
+alias b="git branch"
+alias go="git checkout"
+alias gpull="git pull origin"
+alias gpush="git push origin"
+
+alias sft='php bin/phpunit -c app'
+alias sfd='php app/console  doctrine:schema:update --dump-sql'
+alias sfdf='php app/console doctrine:schema:update --force'
