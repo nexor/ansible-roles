@@ -8,13 +8,13 @@
     - zsh
 
 - name: Clone oh-my-zsh repo
-  git: repo=https://github.com/robbyrussell/oh-my-zsh.git dest=/home/{{ user }}/.oh-my-zsh
+  git: repo=https://github.com/robbyrussell/oh-my-zsh.git dest=/home/{{ ohmyzsh_user }}/.oh-my-zsh
 
 - name: deploy .zshrc
-  template: src=zshrc.j2 dest=/home/{{ user }}/.zshrc owner={{ user }}
+  template: src=zshrc.j2 dest=/home/{{ ohmyzsh_user }}/.zshrc owner={{ ohmyzsh_user }}
 
 - name: Copy aliases
-  copy: src=aliases dest=/home/{{ user }}/.aliases owner={{ user }}
+  copy: src=aliases dest=/home/{{ ohmyzsh_user }}/.aliases owner={{ ohmyzsh_user }}
 
 - name: Set zsh as default shell
-  user: name="{{ user }}" shell=/bin/zsh
+  user: name="{{ ohmyzsh_user }}" shell=/bin/zsh
