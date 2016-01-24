@@ -1,4 +1,5 @@
 ---
 
-fpm_listen: 127.0.0.1:8080
-php_pool_name: www
+php_fpm_install_composer: 1
+php_fpm_xdebug_enabled: 0
+php_fpm_xdebug_remote_host: 127.0.0.1

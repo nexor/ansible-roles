@@ -1,26 +1,35 @@
 ---
-# Install php5-fpm and composer
+# Install php7-fpm
 
-- name: Install PHP5 and extensions
+- name: Add php 7.0 repository
+  apt_repository: repo='ppa:ondrej/php-7.0' state=present update_cache=yes validate_certs=no
+
+- name: Install PHP 7.0 and basic extensions
   action: apt pkg={{item}} state=latest
   with_items:
-    - curl
-    - php5-fpm
-    - php5-cli
-    - php5-pgsql
-    - php5-mcrypt
-    - php5-json
-    - php5-intl
-    - php5-curl
-    - php5-redis
+    - php7.0-common
+    - php7.0-fpm
+    - php7.0-cli
+    - php7.0-pgsql
+    - php7.0-json
+    - php7.0-intl
 
-- name: Enabling PHP5 mcrypt extension
-  command: php5enmod mcrypt creates=/etc/php5/fpm/conf.d/20-mcrypt.ini
+- name: Install xdebug extension
+  action: apt pkg={{item}} state=latest
+  when: php_fpm_xdebug_enabled == 1
+  with_items:
+    - php-xdebug
 
-- name: Setup php-fpm
-  template: src=conf.j2 dest=/etc/php5/fpm/pool.d/{{ php_pool_name }}.conf
+- name: Configure xdebug for remote debugging
+  lineinfile: dest=/etc/php/mods-available/xdebug.ini line={{ item }}
+  when: php_fpm_xdebug_enabled == 1
+  with_items:
+    - "xdebug.max_nesting_level=300"
+    - "xdebug.remote_enable=1"
+    - "xdebug.remote_host={{ php_fpm_xdebug_remote_host }}"
 
 - name: Install composer
-  shell: curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
+  shell: php -r "readfile('https://getcomposer.org/installer');" | php && mv composer.phar /usr/local/bin/composer
   args:
     creates: /usr/local/bin/composer
+  when: php_fpm_install_composer == 1
