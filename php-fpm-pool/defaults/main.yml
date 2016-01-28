@@ -1,0 +1,13 @@
+---
+
+php_fpm_pool_name: www
+php_fpm_pool_user: www-data
+php_fpm_pool_group: www-data
+php_fpm_pool_listen: 127.0.0.1:9090
+
+
+php_fpm_pool_config:
+  php_admin_flag: []
+  php_flag: []
+  php_admin_value: []
+  php_value: []

@@ -1,0 +1,5 @@
+---
+# Install php7-fpm pool
+
+- name: Setup pool
+  template: src=pool.conf.j2 dest=/etc/php/7.0/fpm/pool.d/{{ php_fpm_pool_name }}.conf
