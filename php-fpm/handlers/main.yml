@@ -1,7 +1,7 @@
 ---
 
 - name: restart php-fpm
-  action: service name=php7.0-fpm state=restarted
+  action: service name="php{{ php_fpm_php_version }}-fpm" state=restarted
 
 - name: reload php-fpm
-  action: service name=php7.0-fpm state=reloaded
+  action: service name="php{{ php_fpm_php_version }}-fpm" state=reloaded

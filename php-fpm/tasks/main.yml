@@ -1,35 +1,36 @@
 ---
-# Install php7-fpm
+# Install PHP
 
-- name: Add php 7.0 repository
-  apt_repository: repo='ppa:ondrej/php-7.0' state=present update_cache=yes validate_certs=no
+- name: Register php reposiory
+  apt_repository: repo='ppa:ondrej/php' state=present update_cache=yes
 
-- name: Install PHP 7.0 and basic extensions
+- name: Install PHP and basic extensions
   action: apt pkg={{item}} state=latest
   with_items:
-    - php7.0-common
-    - php7.0-fpm
-    - php7.0-cli
-    - php7.0-pgsql
-    - php7.0-json
-    - php7.0-intl
+    - php{{ php_fpm_php_version }}-cli
+    - php{{ php_fpm_php_version }}-fpm
+    - php{{ php_fpm_php_version }}-curl
+    - php{{ php_fpm_php_version }}-dom
+    - php{{ php_fpm_php_version }}-mbstring
 
 - name: Install xdebug extension
-  action: apt pkg={{item}} state=latest
+  apt: pkg={{item}} state=latest
   when: php_fpm_xdebug_enabled == 1
   with_items:
-    - php-xdebug
+    - php{{ php_fpm_php_version }}-xdebug
 
 - name: Configure xdebug for remote debugging
-  lineinfile: dest=/etc/php/mods-available/xdebug.ini line={{ item }}
+  lineinfile: dest=/etc/php/{{ php_fpm_php_version }}/mods-available/xdebug.ini line={{ item }}
   when: php_fpm_xdebug_enabled == 1
   with_items:
     - "xdebug.max_nesting_level=300"
     - "xdebug.remote_enable=1"
     - "xdebug.remote_host={{ php_fpm_xdebug_remote_host }}"
 
-- name: Install composer
-  shell: php -r "readfile('https://getcomposer.org/installer');" | php && mv composer.phar /usr/local/bin/composer
-  args:
-    creates: /usr/local/bin/composer
-  when: php_fpm_install_composer == 1
+- name: Uncomment reload signal in php-fpm init
+  lineinfile:
+    backup=yes
+    state=present
+    dest=/etc/init/php{{ php_fpm_php_version }}-fpm.conf
+    regexp='reload signal USR2'
+    line='reload signal USR2'
