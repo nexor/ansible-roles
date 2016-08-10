@@ -1,0 +1,5 @@
+---
+
+nginx_worker_rlimit_nofile: 1024
+nginx_enable_proxy_cache: false
+nginx_error_log_level: ''

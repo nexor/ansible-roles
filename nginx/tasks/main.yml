@@ -1,0 +1,24 @@
+---
+
+- name: Adding APT repository key
+  apt_key: url=http://nginx.org/keys/nginx_signing.key
+
+- name: Add official APT repository
+  apt_repository: repo="deb http://nginx.org/packages/ubuntu/ trusty nginx"
+
+- name: Install Nginx
+  apt: name=nginx state=latest update_cache=yes
+
+- name: Copy nginx.conf
+  template: src=nginx.conf dest=/etc/nginx/nginx.conf
+
+- name: Add woff content type to mime.types
+  lineinfile: dest=/etc/nginx/mime.types backup=yes state=present line={{ item }} insertbefore='}'
+  with_items:
+    - "    application/font-woff2\t\t\twoff2;"
+
+- name: Create nginx directories
+  file: path={{ item }} recurse=no mode=0755 state=directory
+  with_items:
+      - /etc/nginx/sites-enabled
+      - /etc/nginx/sites-available
