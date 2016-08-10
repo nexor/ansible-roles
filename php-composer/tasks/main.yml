@@ -1,0 +1,15 @@
+---
+# Install PHP
+
+- name: Register php reposiory
+  apt_repository: repo='ppa:ondrej/php' state=present update_cache=yes
+
+- name: Install PHP cli
+  action: apt pkg={{item}} state=latest
+  with_items:
+    - "php{{ php_composer_php_version }}-cli"
+
+- name: Install composer
+  shell: php -r "readfile('https://getcomposer.org/installer');" | php && mv composer.phar /usr/local/bin/composer
+  args:
+    creates: /usr/local/bin/composer
