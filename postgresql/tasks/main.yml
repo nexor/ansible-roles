@@ -1,19 +1,37 @@
 ---
+
 # Install postgresql
-
 - name: Install psycopg2
-  action: apt pkg={{item}} state=latest
-  with_items:
-    - python-psycopg2
+  apt: name=python-psycopg2 state=latest
 
-- name: Install PostgreSQL
-  apt: name=postgresql-9.3 state=present
-  
+- name: Install PostgreSQL repository
+  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main' state=present
+
+- name: Add PostgreSQL signing key
+  apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present validate_certs=no
+
+- name: Install PostgreSQL 9.6
+  apt: name=postgresql-9.6 state=present update_cache=yes force=yes
+
 - name: Create Postgresql user
   postgresql_user: name="{{ database_user }}" password="{{ database_password }}"
-                role_attr_flags=CREATEDB,LOGIN state=present
-  sudo_user: postgres
+          role_attr_flags=CREATEDB,LOGIN state=present
+  become_user: postgres
 
-- name: Create empty database
-  postgresql_db: name="{{ database_name }}" owner="{{ database_user }}" state=present
-  sudo_user: postgres
+- name: Copy backup scripts
+  become_user: postgres
+  copy: src="{{ item }}" dest=~/backup/ mode="u+x"
+  with_items:
+    - pg_backup_rotated.sh
+
+- name: Copy config for backup
+  template: src=pg_backup.config.j2 dest=~/backup/pg_backup.config
+  become_user: postgres
+
+- name: Setup cron
+  cron: name="backup postgres databases"
+        user="postgres"
+        job="~/backup/pg_backup_rotated.sh"
+        hour="6"
+        minute="0"
+  when: env == 'prod'
