@@ -14,8 +14,11 @@
   apt: name=postgresql-9.6 state=present update_cache=yes force=yes
 
 - name: Create Postgresql user
-  postgresql_user: name="{{ database_user }}" password="{{ database_password }}"
-          role_attr_flags=CREATEDB,LOGIN state=present
+  postgresql_user:
+    name: "{{ postgresql_database_user }}"
+    password: "{{ postgresql_database_password }}"
+    role_attr_flags: CREATEDB,LOGIN
+    state: present
   become_user: postgres
 
 - name: Copy backup scripts
