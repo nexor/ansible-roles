@@ -1,5 +1,5 @@
 ---
 
-php_fpm_php_version: 7.0
+php_fpm_php_version: 7.1
 php_fpm_xdebug_enabled: 0
 php_fpm_xdebug_remote_host: 127.0.0.1
